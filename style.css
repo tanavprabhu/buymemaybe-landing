@@ -397,6 +397,7 @@ h1, h2, .title, .kicker {
 .mw-4 { transform: rotate(4deg);     font-size: 1.3rem;  color: var(--accent); border-color: var(--accent); box-shadow: 3px 3px 0 var(--accent); }
 .mw-5 { transform: rotate(-2.5deg);  font-size: 1.5rem;  background: var(--paper); }
 .mw-6 { transform: rotate(1.8deg);   font-size: 1.4rem;  background: var(--bg-deep); }
+.mw-7 { transform: rotate(-2deg);   font-size: 1.45rem; background: var(--paper-2); }
 
 /* ======================== about ======================== */
 
