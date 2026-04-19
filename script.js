@@ -22,6 +22,76 @@
   }
 
   // Active nav link: highlight whichever section is most in view.
+  const navLinks = document.querySelectorAll('.nav-link');
+  const sectionIds = ['hero', 'demo', 'behind', 'about'];
+
+  // On nav link click, immediately set active and block observer briefly.
+  let scrollLocked = false;
+  let scrollLockTimer = null;
+
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      scrollLocked = true;
+      clearTimeout(scrollLockTimer);
+      scrollLockTimer = setTimeout(() => { scrollLocked = false; }, 900);
+    });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
+    const activeMap = new Map(sectionIds.map(id => [id, false]));
+
+    const navIO = new IntersectionObserver(
+      (entries) => {
+        if (scrollLocked) return;
+        entries.forEach((e) => {
+          activeMap.set(e.target.id, e.isIntersecting);
+        });
+        const current = sectionIds.find(id => activeMap.get(id)) || null;
+        navLinks.forEach((link) => {
+          const target = link.getAttribute('href').replace('#', '');
+          link.classList.toggle('active', target === current);
+        });
+      },
+      { rootMargin: `-${navH}px 0px -55% 0px`, threshold: 0 }
+    );
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) navIO.observe(el);
+    });
+  }
+
+  // Hamburger menu toggle.
+  const hamburger = document.querySelector('.nav-hamburger');
+  const drawer    = document.querySelector('.nav-drawer');
+  const drawerLinks = document.querySelectorAll('.nav-drawer-link');
+
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', () => {
+      const isOpen = drawer.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+      drawer.setAttribute('aria-hidden', !isOpen);
+    });
+    // close drawer when a link is clicked
+    drawerLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        drawer.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+      });
+    });
+    // close on outside click
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !drawer.contains(e.target)) {
+        drawer.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+    });
+  }
+
   // Doodle parallax — skip on touch-only devices.
   const isTouchOnly = window.matchMedia('(hover: none)').matches;
   if (!isTouchOnly) {

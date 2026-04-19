@@ -13,6 +13,28 @@
 </head>
 <body>
 
+  <!-- sticky nav -->
+  <nav class="site-nav" aria-label="main navigation">
+    <a class="nav-logo sketch" href="#hero">buy me maybe</a>
+    <ul class="nav-links" role="list">
+      <li><a href="#hero" class="nav-link active">home</a></li>
+      <li><a href="#demo" class="nav-link">demo</a></li>
+      <li><a href="#behind" class="nav-link">behind the scenes</a></li>
+      <li><a href="#about" class="nav-link">about</a></li>
+    </ul>
+    <button class="nav-hamburger" aria-label="open menu" aria-expanded="false">&#9776;</button>
+  </nav>
+
+  <!-- mobile nav drawer -->
+  <div class="nav-drawer" aria-hidden="true">
+    <ul role="list">
+      <li><a href="#hero" class="nav-drawer-link">home</a></li>
+      <li><a href="#demo" class="nav-drawer-link">demo</a></li>
+      <li><a href="#behind" class="nav-drawer-link">behind the scenes</a></li>
+      <li><a href="#about" class="nav-drawer-link">about</a></li>
+    </ul>
+  </div>
+
   <!-- wobble filter used by .sketch elements to jitter borders -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
