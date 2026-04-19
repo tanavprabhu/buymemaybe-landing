@@ -2,66 +2,23 @@
 
 (function () {
 
-  // Reveal sections as they scroll into view.
-  const sections = document.querySelectorAll('.section');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in-view');
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-    sections.forEach((s) => io.observe(s));
-  } else {
-    sections.forEach((s) => s.classList.add('in-view'));
-  }
-
-  // Active nav link: highlight based on scroll position.
+  // Active nav link: highlight based on scroll position only.
   const navLinks = document.querySelectorAll('.nav-link');
   const sectionIds = ['hero', 'demo', 'behind', 'about'];
-  let clickInProgress = false;
-  let scrollEndTimer = null;
-
-  // On click: set active immediately and freeze scroll-based updates
-  // until smooth scroll finishes.
-  navLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      clickInProgress = true;
-    });
-  });
 
   function setActiveFromScroll() {
-    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
-    // A section is "active" once its top has passed the nav bottom + a small buffer.
-    const threshold = window.scrollY + navH + 40;
+    const scrollY = window.scrollY + 80;
     let current = sectionIds[0];
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
-      if (el && el.offsetTop <= threshold) current = id;
+      if (el && el.offsetTop <= scrollY) current = id;
     });
     navLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
   }
 
-  window.addEventListener('scroll', () => {
-    clearTimeout(scrollEndTimer);
-    // While a click-triggered smooth scroll is running, don't update.
-    if (!clickInProgress) setActiveFromScroll();
-    // Once scrolling stops, release the lock and sync.
-    scrollEndTimer = setTimeout(() => {
-      clickInProgress = false;
-      setActiveFromScroll();
-    }, 150);
-  }, { passive: true });
-
+  window.addEventListener('scroll', setActiveFromScroll, { passive: true });
   setActiveFromScroll();
 
   // Hamburger menu toggle.
@@ -75,7 +32,6 @@
       hamburger.setAttribute('aria-expanded', isOpen);
       drawer.setAttribute('aria-hidden', !isOpen);
     });
-    // close drawer when a link is clicked
     drawerLinks.forEach((link) => {
       link.addEventListener('click', () => {
         drawer.classList.remove('open');
@@ -83,7 +39,6 @@
         drawer.setAttribute('aria-hidden', 'true');
       });
     });
-    // close on outside click
     document.addEventListener('click', (e) => {
       if (!hamburger.contains(e.target) && !drawer.contains(e.target)) {
         drawer.classList.remove('open');
@@ -102,18 +57,15 @@
       const t = getComputedStyle(d).transform;
       baseTransforms.set(d, t === 'none' ? '' : t);
     });
-
     let raf = 0;
-    let targetX = 0, targetY = 0;
     window.addEventListener('mousemove', (e) => {
-      targetX = (e.clientX / window.innerWidth  - 0.5) * 18;
-      targetY = (e.clientY / window.innerHeight - 0.5) * 18;
+      const targetX = (e.clientX / window.innerWidth  - 0.5) * 18;
+      const targetY = (e.clientY / window.innerHeight - 0.5) * 18;
       if (!raf) {
         raf = requestAnimationFrame(() => {
           doodles.forEach((d, i) => {
             const depth = 0.4 + (i % 3) * 0.25;
-            const base  = baseTransforms.get(d) || '';
-            d.style.transform = `${base} translate(${targetX * depth}px, ${targetY * depth}px)`;
+            d.style.transform = `${baseTransforms.get(d) || ''} translate(${targetX * depth}px, ${targetY * depth}px)`;
           });
           raf = 0;
         });
@@ -126,12 +78,8 @@
   if (title) {
     title.addEventListener('click', () => {
       title.animate(
-        [
-          { transform: 'rotate(-2deg)' },
-          { transform: 'rotate(3deg)' },
-          { transform: 'rotate(-2deg)' },
-          { transform: 'rotate(0deg)' }
-        ],
+        [{ transform: 'rotate(-2deg)' }, { transform: 'rotate(3deg)' },
+         { transform: 'rotate(-2deg)' }, { transform: 'rotate(0deg)' }],
         { duration: 420, easing: 'ease-in-out' }
       );
     });
