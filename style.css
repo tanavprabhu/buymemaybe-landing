@@ -14,7 +14,6 @@
 * { box-sizing: border-box; }
 
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 12px);
 }
 
@@ -72,7 +71,6 @@ main { position: relative; z-index: 1; }
   background: var(--paper);
   border-bottom: 2.5px solid var(--ink);
   box-shadow: 0 4px 0 rgba(91,58,30,0.12);
-  /* slightly uneven bottom border for that hand-drawn feel */
   border-radius: 0 0 4px 4px;
 }
 
@@ -412,7 +410,6 @@ h1, h2, .title, .kicker {
   transform: rotate(-0.5deg);
   display: inline-block;
 }
-
 .names {
   list-style: none;
   padding: 0;
@@ -467,22 +464,16 @@ footer {
   .doodles { display: none; }
 }
 
-/* ======================== scroll-in settle ======================== */
+/* ======================== scroll-in fade ======================== */
 
-.section {
-  opacity: 0;
-  transform: translateY(14px) rotate(0.2deg);
-  transition: opacity 0.5s ease, transform 0.7s cubic-bezier(.2,.8,.2,1);
-}
-.section.in-view { opacity: 1; transform: translateY(0) rotate(0); }
-.section-hero {
-  min-height: 100vh; opacity: 1; transform: none; }
+.section { opacity: 0; transition: opacity 0.4s ease; }
+.section.in-view { opacity: 1; }
+.section-hero { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .section { transition: none; opacity: 1; transform: none; }
+  .section { transition: none; opacity: 1; }
   .doodle  { transition: none; }
   .btn     { transition: none; }
-  html     { scroll-behavior: auto; }
 }
 
 /* ======================== mobile tweaks ======================== */
@@ -490,8 +481,7 @@ footer {
 @media (max-width: 640px) {
   html, body { font-size: 18px; }
   .section { padding: 64px 18px; }
-  .section-hero {
-  min-height: 100vh; padding-top: calc(var(--nav-h) + 32px); }
+  .section-hero { padding-top: calc(var(--nav-h) + 32px); }
   .card { padding: 24px 22px; }
   .behind-row { flex-direction: column; }
   .big-arrow { width: 100px; height: 70px; transform: rotate(30deg); }
@@ -499,4 +489,3 @@ footer {
   .tape-br { right: 16px; }
   .made-with-list { gap: 12px 10px; }
 }
-/* cache bust Sun Apr 19 04:24:40 EDT 2026 */
