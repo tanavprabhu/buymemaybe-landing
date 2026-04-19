@@ -25,16 +25,30 @@
   const navLinks = document.querySelectorAll('.nav-link');
   const sectionIds = ['hero', 'demo', 'behind', 'about'];
 
+  // On nav link click, immediately set active and block observer briefly.
+  let scrollLocked = false;
+  let scrollLockTimer = null;
+
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      scrollLocked = true;
+      clearTimeout(scrollLockTimer);
+      scrollLockTimer = setTimeout(() => { scrollLocked = false; }, 900);
+    });
+  });
+
   if ('IntersectionObserver' in window) {
     const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
     const activeMap = new Map(sectionIds.map(id => [id, false]));
 
     const navIO = new IntersectionObserver(
       (entries) => {
+        if (scrollLocked) return;
         entries.forEach((e) => {
           activeMap.set(e.target.id, e.isIntersecting);
         });
-        // highlight the first visible section in order
         const current = sectionIds.find(id => activeMap.get(id)) || null;
         navLinks.forEach((link) => {
           const target = link.getAttribute('href').replace('#', '');
@@ -48,14 +62,6 @@
       if (el) navIO.observe(el);
     });
   }
-
-  // On nav link click, immediately set active state without waiting for scroll.
-  navLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-    });
-  });
 
   // Hamburger menu toggle.
   const hamburger = document.querySelector('.nav-hamburger');
