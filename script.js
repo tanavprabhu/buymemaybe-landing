@@ -21,47 +21,25 @@
     sections.forEach((s) => s.classList.add('in-view'));
   }
 
-  // Active nav link: highlight whichever section is most in view.
+  // Active nav link: highlight based on scroll position.
   const navLinks = document.querySelectorAll('.nav-link');
   const sectionIds = ['hero', 'demo', 'behind', 'about'];
 
-  // On nav link click, immediately set active and block observer briefly.
-  let scrollLocked = false;
-  let scrollLockTimer = null;
-
-  navLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      scrollLocked = true;
-      clearTimeout(scrollLockTimer);
-      scrollLockTimer = setTimeout(() => { scrollLocked = false; }, 900);
-    });
-  });
-
-  if ('IntersectionObserver' in window) {
+  function updateActiveNav() {
     const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
-    const activeMap = new Map(sectionIds.map(id => [id, false]));
-
-    const navIO = new IntersectionObserver(
-      (entries) => {
-        if (scrollLocked) return;
-        entries.forEach((e) => {
-          activeMap.set(e.target.id, e.isIntersecting);
-        });
-        const current = sectionIds.find(id => activeMap.get(id)) || null;
-        navLinks.forEach((link) => {
-          const target = link.getAttribute('href').replace('#', '');
-          link.classList.toggle('active', target === current);
-        });
-      },
-      { rootMargin: `-${navH}px 0px -55% 0px`, threshold: 0 }
-    );
-    sectionIds.forEach(id => {
+    const scrollY = window.scrollY + navH + 24;
+    let current = sectionIds[0];
+    sectionIds.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) navIO.observe(el);
+      if (el && el.offsetTop <= scrollY) current = id;
+    });
+    navLinks.forEach((link) => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
   }
+
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  updateActiveNav();
 
   // Hamburger menu toggle.
   const hamburger = document.querySelector('.nav-hamburger');
