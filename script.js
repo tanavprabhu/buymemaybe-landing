@@ -49,6 +49,14 @@
     });
   }
 
+  // On nav link click, immediately set active state without waiting for scroll.
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
   // Hamburger menu toggle.
   const hamburger = document.querySelector('.nav-hamburger');
   const drawer    = document.querySelector('.nav-drawer');
