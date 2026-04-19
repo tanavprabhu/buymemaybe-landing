@@ -404,6 +404,15 @@ h1, h2, .title, .kicker {
 
 .section-about .card { max-width: 720px; margin: 0 auto; }
 .section-about p { margin: 14px 0; }
+.names-intro {
+  margin: 18px 0 4px;
+  font-family: "Caveat", cursive;
+  font-size: 1.3rem;
+  color: var(--ink-soft);
+  transform: rotate(-0.5deg);
+  display: inline-block;
+}
+
 .names {
   list-style: none;
   padding: 0;
