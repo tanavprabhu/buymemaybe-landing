@@ -24,22 +24,45 @@
   // Active nav link: highlight based on scroll position.
   const navLinks = document.querySelectorAll('.nav-link');
   const sectionIds = ['hero', 'demo', 'behind', 'about'];
+  let clickInProgress = false;
+  let scrollEndTimer = null;
 
-  function updateActiveNav() {
+  // On click: set active immediately and freeze scroll-based updates
+  // until smooth scroll finishes.
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      clickInProgress = true;
+    });
+  });
+
+  function setActiveFromScroll() {
     const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 64;
-    const scrollY = window.scrollY + navH + 24;
+    // A section is "active" once its top has passed the nav bottom + a small buffer.
+    const threshold = window.scrollY + navH + 40;
     let current = sectionIds[0];
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
-      if (el && el.offsetTop <= scrollY) current = id;
+      if (el && el.offsetTop <= threshold) current = id;
     });
     navLinks.forEach((link) => {
       link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
   }
 
-  window.addEventListener('scroll', updateActiveNav, { passive: true });
-  updateActiveNav();
+  window.addEventListener('scroll', () => {
+    clearTimeout(scrollEndTimer);
+    // While a click-triggered smooth scroll is running, don't update.
+    if (!clickInProgress) setActiveFromScroll();
+    // Once scrolling stops, release the lock and sync.
+    scrollEndTimer = setTimeout(() => {
+      clickInProgress = false;
+      setActiveFromScroll();
+    }, 150);
+  }, { passive: true });
+
+  setActiveFromScroll();
 
   // Hamburger menu toggle.
   const hamburger = document.querySelector('.nav-hamburger');
